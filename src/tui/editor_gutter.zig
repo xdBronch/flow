@@ -2,7 +2,7 @@ const std = @import("std");
 const Allocator = std.mem.Allocator;
 const tp = @import("thespian");
 const tracy = @import("tracy");
-const diff = @import("diff");
+const Diff = @import("diff");
 const cbor = @import("cbor");
 const root = @import("root");
 
@@ -31,7 +31,7 @@ relative: bool,
 highlight: bool,
 width: usize = 4,
 editor: *ed.Editor,
-diff: diff,
+diff: Diff,
 diff_symbols: std.ArrayList(Symbol),
 
 const Self = @This();
@@ -49,7 +49,7 @@ pub fn create(allocator: Allocator, parent: Widget, event_source: Widget, editor
         .relative = tui.current().config.gutter_line_numbers_relative,
         .highlight = tui.current().config.highlight_current_line_gutter,
         .editor = editor,
-        .diff = try diff.create(),
+        .diff = try Diff.create(),
         .diff_symbols = std.ArrayList(Symbol).init(allocator),
     };
     try tui.current().message_filters.add(MessageFilter.bind(self, filter_receive));
@@ -310,11 +310,11 @@ fn diff_update(self: *Self) !void {
     return self.diff.diff(diff_result, new, old, eol_mode);
 }
 
-fn diff_result(from: tp.pid_ref, edits: []diff.Edit) void {
+fn diff_result(from: tp.pid_ref, edits: []Diff.Edit) void {
     diff_result_send(from, edits) catch |e| @import("log").err(@typeName(Self), "diff", e);
 }
 
-fn diff_result_send(from: tp.pid_ref, edits: []diff.Edit) !void {
+fn diff_result_send(from: tp.pid_ref, edits: []Diff.Edit) !void {
     var buf: [tp.max_message_size]u8 = undefined;
     var stream = std.io.fixedBufferStream(&buf);
     const writer = stream.writer();

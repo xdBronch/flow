@@ -45,6 +45,7 @@ pub fn build(b: *std.Build) void {
     const vaxis_dep = b.dependency("vaxis", .{
         .target = target,
         .optimize = dependency_optimize,
+        .libxev = false,
     });
     const vaxis_mod = vaxis_dep.module("vaxis");
 
@@ -235,16 +236,20 @@ pub fn build(b: *std.Build) void {
     exe.root_module.addImport("renderer", renderer_mod);
     exe.root_module.addImport("syntax", syntax_mod);
     exe.root_module.addImport("version_info", b.createModule(.{ .root_source_file = version_info_file }));
-    b.installArtifact(exe);
+    if (b.option(bool, "no-bin", "") == true) {
+        b.getInstallStep().dependOn(&exe.step);
+    } else {
+        b.installArtifact(exe);
 
-    const run_cmd = b.addRunArtifact(exe);
-    run_cmd.step.dependOn(b.getInstallStep());
-    if (b.args) |args| {
-        run_cmd.addArgs(args);
+        const run_cmd = b.addRunArtifact(exe);
+        run_cmd.step.dependOn(b.getInstallStep());
+        if (b.args) |args| {
+            run_cmd.addArgs(args);
+        }
+
+        const run_step = b.step("run", "Run the app");
+        run_step.dependOn(&run_cmd.step);
     }
-
-    const run_step = b.step("run", "Run the app");
-    run_step.dependOn(&run_cmd.step);
 
     const check_exe = b.addExecutable(.{
         .name = "flow",

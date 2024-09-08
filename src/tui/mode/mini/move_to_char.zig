@@ -1,6 +1,6 @@
 const tp = @import("thespian");
 
-const key = @import("renderer").input.key;
+const Key = @import("renderer").input.key;
 const mod = @import("renderer").input.modifier;
 const event_type = @import("renderer").input.event_type;
 const ucs32_to_utf8 = @import("renderer").ucs32_to_utf8;
@@ -82,18 +82,18 @@ fn mapEvent(self: *Self, evtype: u32, keypress: u32, egc: u32, modifiers: u32) t
 
 fn mapPress(self: *Self, keypress: u32, egc: u32, modifiers: u32) tp.result {
     switch (keypress) {
-        key.LSUPER, key.RSUPER => return,
-        key.LSHIFT, key.RSHIFT => return,
-        key.LCTRL, key.RCTRL => return,
-        key.LALT, key.RALT => return,
+        Key.LSUPER, Key.RSUPER => return,
+        Key.LSHIFT, Key.RSHIFT => return,
+        Key.LCTRL, Key.RCTRL => return,
+        Key.LALT, Key.RALT => return,
         else => {},
     }
     return switch (modifiers) {
-        mod.SHIFT => if (!key.synthesized_p(keypress)) self.execute_operation(egc) else self.cancel(),
+        mod.SHIFT => if (!Key.synthesized_p(keypress)) self.execute_operation(egc) else self.cancel(),
         0 => switch (keypress) {
-            key.ESC => self.cancel(),
-            key.ENTER => self.cancel(),
-            else => if (!key.synthesized_p(keypress)) self.execute_operation(egc) else self.cancel(),
+            Key.ESC => self.cancel(),
+            Key.ENTER => self.cancel(),
+            else => if (!Key.synthesized_p(keypress)) self.execute_operation(egc) else self.cancel(),
         },
         else => self.cancel(),
     };

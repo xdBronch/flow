@@ -607,9 +607,9 @@ pub const Editor = struct {
                 const ctx = @as(*@This(), @ptrCast(@alignCast(ctx_)));
                 if (egc[0] == ' ' or egc[0] == '\t') {
                     ctx.col += wcwidth;
-                    return Buffer.Walker.keep_walking;
+                    return .{ .keep_walking = true };
                 }
-                return Buffer.Walker.stop;
+                return .{ .keep_walking = false };
             }
         };
         var ctx: Ctx = .{};
@@ -635,7 +635,7 @@ pub const Editor = struct {
                 const ctx = @as(*@This(), @ptrCast(@alignCast(ctx_)));
                 if (ctx.col < ctx.sel.begin.col) {
                     ctx.col += wcwidth;
-                    return Buffer.Walker.keep_walking;
+                    return .{ .keep_walking = true };
                 }
                 _ = ctx.writer.write(egc) catch |e| return Buffer.Walker{ .err = e };
                 ctx.wcwidth += wcwidth;
@@ -648,9 +648,9 @@ pub const Editor = struct {
                     ctx.sel.begin.col += wcwidth;
                 }
                 return if (ctx.sel.begin.eql(ctx.sel.end))
-                    Buffer.Walker.stop
+                    .{ .keep_walking = false }
                 else
-                    Buffer.Walker.keep_walking;
+                    .{ .keep_walking = true };
             }
         };
 
@@ -706,7 +706,7 @@ pub const Editor = struct {
                 const n = &self_.plane;
 
                 if (ctx.buf_row > view.row + view.rows)
-                    return Buffer.Walker.stop;
+                    return .{ .keep_walking = false };
 
                 const bufsize = 4095;
                 var bufstatic: [bufsize:0]u8 = undefined;
@@ -782,7 +782,7 @@ pub const Editor = struct {
                     ctx.buf_col = 0;
                     ctx.leading = true;
                 }
-                return Buffer.Walker.keep_walking;
+                return .{ .keep_walking = true };
             }
         };
         const hl_row: ?usize = if (tui.current().config.highlight_current_line) self.get_primary().cursor.row else null;
@@ -3763,7 +3763,7 @@ pub const Editor = struct {
     }
     pub const format_meta = .{ .description = "Language: Format file or selection" };
 
-    pub fn filter(self: *Self, ctx: Context) Result {
+    pub fn apply_filter(self: *Self, ctx: Context) Result {
         if (!try ctx.args.match(.{ tp.string, tp.more }))
             return error.InvalidArgument;
         try self.filter_cmd(ctx.args);

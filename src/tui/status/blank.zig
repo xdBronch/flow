@@ -29,9 +29,9 @@ pub fn deinit(self: *Self, allocator: std.mem.Allocator) void {
     allocator.destroy(self);
 }
 
-pub fn layout(self: *Self) Widget.Layout {
-    return self.layout;
-}
+// pub fn layout(self: *Self) Widget.Layout {
+//     return self.layout;
+// }
 
 pub fn render(self: *Self, theme: *const Widget.Theme) bool {
     self.plane.set_base_style(" ", theme.statusbar);

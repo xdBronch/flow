@@ -1,14 +1,14 @@
 pub const StyleBits = packed struct(u5) {
-    struck: bool = false,
-    bold: bool = false,
-    undercurl: bool = false,
-    underline: bool = false,
-    italic: bool = false,
+    is_struck: bool = false,
+    is_bold: bool = false,
+    is_undercurl: bool = false,
+    is_underline: bool = false,
+    is_italic: bool = false,
 
-    pub const struck: StyleBits = .{ .struck = true };
-    pub const bold: StyleBits = .{ .bold = true };
-    pub const undercurl: StyleBits = .{ .undercurl = true };
-    pub const underline: StyleBits = .{ .underline = true };
-    pub const italic: StyleBits = .{ .italic = true };
+    pub const struck: StyleBits = .{ .is_struck = true };
+    pub const bold: StyleBits = .{ .is_bold = true };
+    pub const undercurl: StyleBits = .{ .is_undercurl = true };
+    pub const underline: StyleBits = .{ .is_underline = true };
+    pub const italic: StyleBits = .{ .is_italic = true };
     pub const normal: StyleBits = .{};
 };

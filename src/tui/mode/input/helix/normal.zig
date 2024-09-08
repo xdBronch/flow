@@ -519,8 +519,8 @@ fn cmd_async(self: *Self, name_: []const u8) tp.result {
 
 fn seq(self: *Self, cmds: anytype, ctx: command.Context) tp.result {
     const cmds_type_info = @typeInfo(@TypeOf(cmds));
-    if (cmds_type_info != .Struct) @compileError("expected tuple argument");
-    const fields_info = cmds_type_info.Struct.fields;
+    if (cmds_type_info != .@"struct") @compileError("expected tuple argument");
+    const fields_info = cmds_type_info.@"struct".fields;
     inline for (fields_info) |field_info|
         try self.cmd(@field(cmds, field_info.name), ctx);
 }

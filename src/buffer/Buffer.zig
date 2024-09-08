@@ -61,9 +61,9 @@ pub const WalkerMut = struct {
     replace: ?Root = null,
     err: ?anyerror = null,
 
-    pub const keep_walking = WalkerMut{ .keep_walking = true };
-    pub const stop = WalkerMut{ .keep_walking = false };
-    pub const found = WalkerMut{ .found = true };
+    // pub const keep_walking: WalkerMut = .{ .keep_walking = true };
+    // pub const stop: WalkerMut = .{ .keep_walking = false };
+    // pub const found: WalkerMut = .{ .found = true };
 
     const F = *const fn (ctx: *anyopaque, leaf: *const Leaf, metrics: Metrics) WalkerMut;
 };
@@ -73,9 +73,9 @@ pub const Walker = struct {
     found: bool = false,
     err: ?anyerror = null,
 
-    pub const keep_walking = Walker{ .keep_walking = true };
-    pub const stop = Walker{ .keep_walking = false };
-    pub const found = Walker{ .found = true };
+    // pub const keep_walking = Walker{ .keep_walking = true };
+    // pub const stop = Walker{ .keep_walking = false };
+    // pub const found = Walker{ .found = true };
 
     const F = *const fn (ctx: *anyopaque, leaf: *const Leaf, metrics: Metrics) Walker;
 };
@@ -382,7 +382,7 @@ const Node = union(enum) {
                     result.found = true;
                     return result;
                 }
-                return Walker.keep_walking;
+                return .{ .keep_walking = true };
             },
         }
     }
@@ -427,7 +427,7 @@ const Node = union(enum) {
                     result.found = true;
                     return result;
                 }
-                return WalkerMut.keep_walking;
+                return .{ .keep_walking = true };
             },
         }
     }
@@ -490,15 +490,15 @@ const Node = union(enum) {
                     if (ret.err) |e| return .{ .err = e };
                     buf = buf[bytes..];
                     ctx.abs_col += @intCast(cols);
-                    if (!ret.keep_walking) return Walker.stop;
+                    if (!ret.keep_walking) return .{ .keep_walking = false };
                 }
                 if (leaf.eol) {
                     const ret = ctx.walker_f(ctx.walker_ctx, "\n", 1, metrics);
                     if (ret.err) |e| return .{ .err = e };
-                    if (!ret.keep_walking) return Walker.stop;
+                    if (!ret.keep_walking) return .{ .keep_walking = false };
                     ctx.abs_col = 0;
                 }
-                return Walker.keep_walking;
+                return .{ .keep_walking = true };
             }
         };
         var ctx: Ctx = .{ .walker_f = walker_f, .walker_ctx = walker_ctx };
@@ -516,9 +516,9 @@ const Node = union(enum) {
                 ctx.at = egc;
                 ctx.wcwidth = wcwidth;
                 if (ctx.col == 0 or egc[0] == '\n' or ctx.col < wcwidth)
-                    return Walker.stop;
+                    return .{ .keep_walking = false };
                 ctx.col -= wcwidth;
-                return Walker.keep_walking;
+                return .{ .keep_walking = true };
             }
         };
         var ctx: ctx_ = .{ .col = col };
@@ -543,7 +543,7 @@ const Node = union(enum) {
                     p.* = ctx.wcwidth;
                 }
                 ctx.wcwidth += wcwidth;
-                return if (egc[0] == '\n') Walker.stop else Walker.keep_walking;
+                return if (egc[0] == '\n') .{ .keep_walking = false } else .{ .keep_walking = true };
             }
         };
         var ctx: Ctx = .{ .map = map };
@@ -564,7 +564,7 @@ const Node = union(enum) {
                 const ctx = @as(*@This(), @ptrCast(@alignCast(ctx_)));
                 if (ctx.col < ctx.sel.begin.col) {
                     ctx.col += wcwidth;
-                    return Walker.keep_walking;
+                    return .{ .keep_walking = true };
                 }
                 if (ctx.out) |out| {
                     if (egc.len > out.len)
@@ -583,9 +583,9 @@ const Node = union(enum) {
                     ctx.sel.begin.col += wcwidth;
                 }
                 return if (ctx.sel.begin.eql(ctx.sel.end) or ctx.sel.begin.right_of(ctx.sel.end))
-                    Walker.stop
+                    .{ .keep_walking = false }
                 else
-                    Walker.keep_walking;
+                    .{ .keep_walking = true };
             }
         };
 
@@ -628,7 +628,7 @@ const Node = union(enum) {
             delete_next_bol: bool = false,
             fn walker(Ctx: *anyopaque, leaf: *const Leaf, metrics: Metrics) WalkerMut {
                 const ctx = @as(*@This(), @ptrCast(@alignCast(Ctx)));
-                var result = WalkerMut.keep_walking;
+                var result: WalkerMut = .{ .keep_walking = true };
                 if (ctx.delete_next_bol and ctx.count == 0) {
                     result.replace = Leaf.new(ctx.allocator, leaf.buf, false, leaf.eol) catch |e| return .{ .err = e };
                     result.keep_walking = false;
@@ -719,7 +719,7 @@ const Node = union(enum) {
             fn walker(ctx_: *anyopaque, leaf: *const Leaf, _: Metrics) Walker {
                 const ctx = @as(*@This(), @ptrCast(@alignCast(ctx_)));
                 ctx.line.appendSlice(leaf.buf) catch |e| return .{ .err = e };
-                return if (!leaf.eol) Walker.keep_walking else Walker.stop;
+                return if (!leaf.eol) .{ .keep_walking = true } else .{ .keep_walking = false };
             }
         };
         var ctx: Ctx = .{ .line = result };
@@ -733,7 +733,7 @@ const Node = union(enum) {
             fn walker(ctx: *anyopaque, leaf: *const Leaf, metrics: Metrics) Walker {
                 const do = @as(*@This(), @ptrCast(@alignCast(ctx)));
                 do.result += leaf.width(do.result, metrics);
-                return if (!leaf.eol) Walker.keep_walking else Walker.stop;
+                return if (!leaf.eol) .{ .keep_walking = true } else .{ .keep_walking = false };
             }
         };
         var ctx: do = .{};
@@ -748,7 +748,7 @@ const Node = union(enum) {
             fn walker(ctx: *anyopaque, leaf: *const Leaf, metrics: Metrics) Walker {
                 const do = @as(*@This(), @ptrCast(@alignCast(ctx)));
                 do.result += leaf.pos_to_width(&do.pos, do.result, metrics);
-                return if (!(leaf.eol or do.pos == 0)) Walker.keep_walking else Walker.stop;
+                return if (!(leaf.eol or do.pos == 0)) .{ .keep_walking = true } else .{ .keep_walking = false };
             }
         };
         var ctx: do = .{ .pos = pos };
@@ -823,7 +823,7 @@ const Node = union(enum) {
                 }
 
                 Ctx.col -= leaf_wcwidth;
-                return if (leaf.eol) WalkerMut.stop else WalkerMut.keep_walking;
+                return if (leaf.eol) .{ .keep_walking = false } else .{ .keep_walking = true };
             }
         };
         if (s.len == 0) return error.Stop;
@@ -1002,7 +1002,7 @@ const Node = union(enum) {
                 const ctx = @as(*@This(), @ptrCast(@alignCast(ctx_)));
                 leaf.dump(ctx.l, ctx.wcwidth, metrics) catch |e| return .{ .err = e };
                 ctx.wcwidth += leaf.width(ctx.wcwidth, metrics);
-                return if (!leaf.eol) Walker.keep_walking else Walker.stop;
+                return if (!leaf.eol) .{ .keep_walking = true } else .{ .keep_walking = false };
             }
         };
         var ctx: ctx_ = .{ .l = output };

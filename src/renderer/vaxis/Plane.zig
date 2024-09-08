@@ -251,19 +251,19 @@ pub fn set_styles(self: *Plane, stylebits: StyleBits) void {
 }
 
 pub fn on_styles(self: *Plane, stylebits: StyleBits) void {
-    if (stylebits.struck) self.style.strikethrough = true;
-    if (stylebits.bold) self.style.bold = true;
-    if (stylebits.undercurl) self.style.ul_style = .curly;
-    if (stylebits.underline) self.style.ul_style = .single;
-    if (stylebits.italic) self.style.italic = true;
+    if (stylebits.is_struck) self.style.strikethrough = true;
+    if (stylebits.is_bold) self.style.bold = true;
+    if (stylebits.is_undercurl) self.style.ul_style = .curly;
+    if (stylebits.is_underline) self.style.ul_style = .single;
+    if (stylebits.is_italic) self.style.italic = true;
 }
 
 pub fn off_styles(self: *Plane, stylebits: StyleBits) void {
-    if (stylebits.struck) self.style.strikethrough = false;
-    if (stylebits.bold) self.style.bold = false;
-    if (stylebits.undercurl) self.style.ul_style = .off;
-    if (stylebits.underline) self.style.ul_style = .off;
-    if (stylebits.italic) self.style.italic = false;
+    if (stylebits.is_struck) self.style.strikethrough = false;
+    if (stylebits.is_bold) self.style.bold = false;
+    if (stylebits.is_undercurl) self.style.ul_style = .off;
+    if (stylebits.is_underline) self.style.ul_style = .off;
+    if (stylebits.is_italic) self.style.italic = false;
 }
 
 pub fn set_fg_rgb(self: *Plane, channel: u32) !void {

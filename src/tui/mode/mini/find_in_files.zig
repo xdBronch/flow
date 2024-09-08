@@ -6,7 +6,7 @@ const event_type = @import("renderer").input.event_type;
 const ucs32_to_utf8 = @import("renderer").ucs32_to_utf8;
 
 const tui = @import("../../tui.zig");
-const mainview = @import("../../mainview.zig");
+const Mainview = @import("../../mainview.zig");
 const command = @import("../../command.zig");
 const EventHandler = @import("../../EventHandler.zig");
 
@@ -20,11 +20,11 @@ buf: [1024]u8 = undefined,
 input: []u8 = "",
 last_buf: [1024]u8 = undefined,
 last_input: []u8 = "",
-mainview: *mainview,
+mainview: *Mainview,
 
 pub fn create(allocator: Allocator, _: command.Context) !*Self {
     const self: *Self = try allocator.create(Self);
-    if (tui.current().mainview.dynamic_cast(mainview)) |mv| {
+    if (tui.current().mainview.dynamic_cast(Mainview)) |mv| {
         self.* = .{
             .allocator = allocator,
             .mainview = mv,

@@ -24,7 +24,7 @@ pub const VTable = struct {
 
 pub fn to_owned(pimpl: anytype) Self {
     const impl = @typeInfo(@TypeOf(pimpl));
-    const child: type = impl.Pointer.child;
+    const child: type = impl.pointer.child;
     return .{
         .ptr = pimpl,
         .vtable = comptime &.{
@@ -45,7 +45,7 @@ pub fn to_owned(pimpl: anytype) Self {
 
 pub fn to_unowned(pimpl: anytype) Self {
     const impl = @typeInfo(@TypeOf(pimpl));
-    const child: type = impl.Pointer.child;
+    const child: type = impl.pointer.child;
     return .{
         .ptr = pimpl,
         .vtable = comptime &.{
@@ -64,7 +64,7 @@ pub fn to_unowned(pimpl: anytype) Self {
 
 pub fn bind(pimpl: anytype, comptime f: *const fn (ctx: @TypeOf(pimpl), from: tp.pid_ref, m: tp.message) Error!bool) Self {
     const impl = @typeInfo(@TypeOf(pimpl));
-    const child: type = impl.Pointer.child;
+    const child: type = impl.pointer.child;
     return .{
         .ptr = pimpl,
         .vtable = comptime &.{

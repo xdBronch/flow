@@ -1,7 +1,7 @@
 const std = @import("std");
 const tp = @import("thespian");
 const log = @import("log");
-const config = @import("config");
+const Config = @import("config");
 const project_manager = @import("project_manager");
 const root = @import("root");
 const tracy = @import("tracy");
@@ -13,13 +13,13 @@ const command = @import("command.zig");
 const Widget = @import("Widget.zig");
 const MessageFilter = @import("MessageFilter.zig");
 const EventHandler = @import("EventHandler.zig");
-const mainview = @import("mainview.zig");
+const Mainview = @import("mainview.zig");
 
 const Allocator = std.mem.Allocator;
 
 allocator: Allocator,
 rdr: renderer,
-config: config,
+config: Config,
 frame_time: usize, // in microseconds
 frame_clock: tp.metronome,
 frame_clock_running: bool = false,
@@ -129,7 +129,7 @@ fn init(allocator: Allocator) !*Self {
             try self.listen_sigwinch();
         },
     }
-    self.mainview = try mainview.create(allocator);
+    self.mainview = try Mainview.create(allocator);
     self.resize();
     self.set_terminal_style();
     try self.rdr.render();

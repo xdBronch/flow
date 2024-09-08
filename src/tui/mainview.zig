@@ -4,7 +4,7 @@ const cbor = @import("cbor");
 const tracy = @import("tracy");
 const ripgrep = @import("ripgrep");
 const root = @import("root");
-const location_history = @import("location_history");
+const LocationHistory = @import("location_history");
 const project_manager = @import("project_manager");
 const log = @import("log");
 
@@ -41,7 +41,7 @@ editor: ?*ed.Editor = null,
 view_widget_idx: usize,
 panels: ?*WidgetList = null,
 last_match_text: ?[]const u8 = null,
-location_history: location_history,
+location_history: LocationHistory,
 file_stack: std.ArrayList([]const u8),
 find_in_files_done: bool = false,
 file_list_type: FileListType = .find_in_files,
@@ -61,7 +61,7 @@ pub fn create(allocator: std.mem.Allocator) !Widget {
         .widgets = undefined,
         .widgets_widget = undefined,
         .floating_views = WidgetStack.init(allocator),
-        .location_history = try location_history.create(),
+        .location_history = try LocationHistory.create(),
         .file_stack = std.ArrayList([]const u8).init(allocator),
         .view_widget_idx = 0,
     };
@@ -161,7 +161,7 @@ fn bottom_bar_primary_drag(self: *Self, y: usize) tp.result {
     };
     const h = self.plane.dim_y();
     self.panel_height = @max(1, h - @min(h, y + 1));
-    panels.layout = .{ .static = self.panel_height.? };
+    panels.llayout = .{ .static = self.panel_height.? };
     if (self.panel_height == 1) {
         self.panel_height = null;
         command.executeName("toggle_panel", .{}) catch {};
@@ -592,14 +592,14 @@ pub fn location_update(self: *Self, m: tp.message) tp.result {
         return self.location_history.update(file_path, .{ .row = row + 1, .col = col + 1 }, null);
     }
 
-    var sel: location_history.Selection = .{};
+    var sel: LocationHistory.Selection = .{};
     if (try m.match(.{ tp.any, tp.any, tp.any, tp.extract(&row), tp.extract(&col), tp.extract(&sel.begin.row), tp.extract(&sel.begin.col), tp.extract(&sel.end.row), tp.extract(&sel.end.col) })) {
         project_manager.update_mru(file_path, row, col) catch {};
         return self.location_history.update(file_path, .{ .row = row + 1, .col = col + 1 }, sel);
     }
 }
 
-fn location_jump(from: tp.pid_ref, file_path: []const u8, cursor: location_history.Cursor, selection: ?location_history.Selection) void {
+fn location_jump(from: tp.pid_ref, file_path: []const u8, cursor: LocationHistory.Cursor, selection: ?LocationHistory.Selection) void {
     if (selection) |sel|
         from.send(.{ "cmd", "navigate", .{
             .file = file_path,

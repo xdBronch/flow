@@ -160,7 +160,7 @@ fn getTargetType(comptime Namespace: type) type {
 fn getCommands(comptime Namespace: type) []const CmdDef(*getTargetType(Namespace)) {
     @setEvalBranchQuota(10_000);
     comptime switch (@typeInfo(Namespace)) {
-        .Struct => |info| {
+        .@"struct" => |info| {
             var count = 0;
             const Target = getTargetType(Namespace);
             // @compileLog(Namespace, Target);
@@ -208,7 +208,7 @@ pub fn Collection(comptime Namespace: type) type {
     }
     const fields: [cmds.len]std.builtin.Type.StructField = fields_var;
     const Fields = @Type(.{
-        .Struct = .{
+        .@"struct" = .{
             .is_tuple = false,
             .layout = .auto,
             .decls = &.{},
