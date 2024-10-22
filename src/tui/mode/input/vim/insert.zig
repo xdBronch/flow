@@ -101,22 +101,12 @@ fn mapPress(self: *Self, keypress: u32, egc: u32, modifiers: u32) !void {
         }
 
         //chording
-        if (self.last_key.keypress == 'j' and self.last_key.modifiers == 0 and keypress == 'k' and modifiers == 0) {
-            try self.cmd("undo", .{});
-            try self.cmd("enter_mode", command.fmt(.{"vim/normal"}));
-            return;
-        }
-        if (self.last_key.keypress == 'k' and self.last_key.modifiers == 0 and keypress == 'j' and modifiers == 0) {
-            try self.cmd("undo", .{});
-            try self.cmd("enter_mode", command.fmt(.{"vim/normal"}));
-            return;
-        }
-        if (self.last_key.keypress == 'f' and self.last_key.modifiers == 0 and keypress == 'j' and modifiers == 0) {
-            try self.cmd("undo", .{});
-            try self.cmd("enter_mode", command.fmt(.{"vim/normal"}));
-            return;
-        }
-        if (self.last_key.keypress == 'j' and self.last_key.modifiers == 0 and keypress == 'f' and modifiers == 0) {
+        if (self.last_key.modifiers == 0 and modifiers == 0 and
+            (self.last_key.keypress == 'j' and keypress == 'k' or
+            self.last_key.keypress == 'k' and keypress == 'j' or
+            self.last_key.keypress == 'f' and keypress == 'j' or
+            self.last_key.keypress == 'j' and keypress == 'f'))
+        {
             try self.cmd("undo", .{});
             try self.cmd("enter_mode", command.fmt(.{"vim/normal"}));
             return;
