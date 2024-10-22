@@ -94,13 +94,13 @@ fn mapPress(self: *Self, keypress: u32, egc: u32, modifiers: u32) !void {
 
     if (tui.current().config.vim_insert_chording_keybindings) {
 
-        //reset chord if enough time has passed
+        // reset chord if enough time has passed
         const chord_time_window_ms = 750;
         if (std.time.milliTimestamp() - self.last_key.timestamp_ms > chord_time_window_ms) {
             self.last_key = .{};
         }
 
-        //chording
+        // chording
         if (self.last_key.modifiers == 0 and modifiers == 0 and
             (self.last_key.keypress == 'j' and keypress == 'k' or
             self.last_key.keypress == 'k' and keypress == 'j' or
@@ -112,7 +112,7 @@ fn mapPress(self: *Self, keypress: u32, egc: u32, modifiers: u32) !void {
             return;
         }
 
-        //record current key event
+        // record current key event
         self.last_key = .{
             .keypress = keypress,
             .modifiers = modifiers,

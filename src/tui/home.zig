@@ -224,7 +224,7 @@ const Fire = struct {
     plane: Plane,
     prng: std.Random.DefaultPrng,
 
-    //scope cache - spread fire
+    // scope cache - spread fire
     spread_px: u8 = 0,
     spread_rnd_idx: u8 = 0,
     spread_dst: u16 = 0,
@@ -283,17 +283,17 @@ const Fire = struct {
         self.plane.home();
         var rand = self.prng.random();
 
-        //update fire buf
+        // update fire buf
         var doFire_x: u16 = 0;
         while (doFire_x < self.FIRE_W) : (doFire_x += 1) {
             var doFire_y: u16 = 0;
             while (doFire_y < self.FIRE_H) : (doFire_y += 1) {
                 const doFire_idx: u16 = doFire_y * self.FIRE_W + doFire_x;
 
-                //spread fire
+                // spread fire
                 self.spread_px = self.screen_buf[doFire_idx];
 
-                //bounds checking
+                // bounds checking
                 if ((self.spread_px == 0) and (doFire_idx >= self.FIRE_W)) {
                     self.screen_buf[doFire_idx - self.FIRE_W] = 0;
                 } else {
@@ -314,7 +314,7 @@ const Fire = struct {
             }
         }
 
-        //scope cache - fire 2 screen buffer
+        // scope cache - fire 2 screen buffer
         var frame_x: u16 = 0;
         var frame_y: u16 = 0;
 
@@ -324,7 +324,7 @@ const Fire = struct {
             // for each col
             frame_x = 0;
             while (frame_x < self.FIRE_W) : (frame_x += 1) {
-                //each character rendered is actually to rows of 'pixels'
+                // each character rendered is actually to rows of 'pixels'
                 // - "hi" (current px row => fg char)
                 // - "low" (next row => bg color)
                 const px_hi = self.screen_buf[frame_y * self.FIRE_W + frame_x];

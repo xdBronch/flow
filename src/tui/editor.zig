@@ -980,20 +980,20 @@ pub const Editor = struct {
         const c = &cell;
         if (self.render_whitespace == .visible) {
             c.set_style(theme.editor_whitespace);
-            //_ = n.cell_load(c, "$") catch {};
-            //_ = n.cell_load(c, " ") catch {};
-            //_ = n.cell_load(c, "⏎") catch {};
+            // _ = n.cell_load(c, "$") catch {};
+            // _ = n.cell_load(c, " ") catch {};
+            // _ = n.cell_load(c, "⏎") catch {};
             // _ = n.cell_load(c, "󰌑") catch {};
             _ = n.cell_load(c, "↩") catch {};
-            //_ = n.cell_load(c, "↲") catch {};
-            //_ = n.cell_load(c, "⤶") catch {};
-            //_ = n.cell_load(c, "󱞱") catch {};
-            //_ = n.cell_load(c, "󱞲") catch {};
-            //_ = n.cell_load(c, "⤦") catch {};
-            //_ = n.cell_load(c, "¬") catch {};
-            //_ = n.cell_load(c, "␤") catch {};
-            //_ = n.cell_load(c, "❯") catch {};
-            //_ = n.cell_load(c, "❮") catch {};
+            // _ = n.cell_load(c, "↲") catch {};
+            // _ = n.cell_load(c, "⤶") catch {};
+            // _ = n.cell_load(c, "󱞱") catch {};
+            // _ = n.cell_load(c, "󱞲") catch {};
+            // _ = n.cell_load(c, "⤦") catch {};
+            // _ = n.cell_load(c, "¬") catch {};
+            // _ = n.cell_load(c, "␤") catch {};
+            // _ = n.cell_load(c, "❯") catch {};
+            // _ = n.cell_load(c, "❮") catch {};
         } else {
             _ = n.cell_load(c, " ") catch {};
         }
@@ -4078,8 +4078,7 @@ pub const EditorWidget = struct {
         if (try m.match(.{ "M", tp.extract(&x), tp.extract(&y), tp.extract(&xpx), tp.extract(&ypx) })) {
             const hover_y, const hover_x = self.editor.plane.abs_yx_to_rel(y, x);
             if (hover_y != self.hover_y or hover_x != self.hover_x) {
-                self.hover_y, self.hover_x = .{ 
-                hover_y, hover_x };
+                self.hover_y, self.hover_x = .{ hover_y, hover_x };
                 if (self.editor.jump_mode)
                     self.update_hover_timer(.init);
             }
@@ -4139,8 +4138,8 @@ pub const EditorWidget = struct {
             key.BUTTON3 => &mouse_click_button3,
             key.BUTTON4 => &mouse_click_button4,
             key.BUTTON5 => &mouse_click_button5,
-            key.BUTTON8 => &mouse_click_button8, //back
-            key.BUTTON9 => &mouse_click_button9, //forward
+            key.BUTTON8 => &mouse_click_button8, // back
+            key.BUTTON9 => &mouse_click_button9, // forward
             else => return,
         })(self, y, x, ypx, xpx);
         self.last_btn = btn;
